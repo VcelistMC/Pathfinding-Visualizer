@@ -5,10 +5,11 @@ var rectSvgEle = document.createElementNS(svgNS, 'rect');
 rectSvgEle.setAttribute('width', '30');
 rectSvgEle.setAttribute('height', '30');
 rectSvgEle.style = "-webkit-tap-highlight-color: rgba(0, 0, 0, 0);";
-rectSvgEle.style.fill = '#ffffff';
+rectSvgEle.style.fill = '#EEEEEE';
 rectSvgEle.style.stroke = '#000';
 rectSvgEle.style.strokeOpacity = 0.2
 
+var gridArray = []
 var columnsMax = Math.ceil(mainContainer.clientWidth / 30);
 var rowsMax = Math.ceil(mainContainer.clientHeight / 30);
 console.log(columnsMax, rowsMax);
@@ -33,16 +34,32 @@ while (true) {
     newEle.setAttribute('x', x.toString());
     newEle.setAttribute('y', y.toString());
     x += 30;
+    gridArray.push(newEle);
     mainContainer.appendChild(newEle);
     currCol++;
 }
 
-// function modColor(child) {
-//     console.log("shhwqeq");
-//     child.style.backgroundColor = "blue";
-// }
+function modColor(child) {
+    // console.log("shhwqeq");
+    child.style.fill = "#0000"
+}
 
-// let squareArray = document.getElementsByClassName("square");
+// let squareArray = document.getElementsByTagName("rect");
 // Array.from(squareArray).forEach(function(elem) {
 //     elem.addEventListener("click", () => { modColor(elem); });
 // });
+
+function onMouseMove(mouse) {
+    let child = document.elementFromPoint(mouse.clientX, mouse.clientY);
+    modColor(child);
+}
+
+mainContainer.addEventListener('mousedown', mouse => {
+    mainContainer.onmousemove = onMouseMove;
+    let child = document.elementFromPoint(mouse.clientX, mouse.clientY);
+    modColor(child);
+})
+
+mainContainer.addEventListener('mouseup', ()=>{
+    mainContainer.onmousemove = null;
+})
