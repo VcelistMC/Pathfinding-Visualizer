@@ -1,10 +1,27 @@
-.square {
-    width: 20px;
-    height: 20px;
-    background-color: #EEEEEE;
-    border-style: solid;
-    border-color: #393E46;
+.wall {
+    fill: black;
 }
+
+.cell {
+    fill: #EEEEEE;
+}
+
+.start {
+    fill: limegreen;
+}
+
+.end {
+    fill: red;
+}
+
+.visited {
+    fill: lightblue;
+}
+
+.path {
+    fill: yellowgreen;
+}
+
 svg {
     height: 100%;
     width: 100%;
