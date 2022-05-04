@@ -5,11 +5,15 @@ const START = "start";
 const END = "end";
 
 class GridModel{
+    
     constructor(rows, cols){
         this.rows = rows;
         this.cols = cols;
+        
         this.init();
     }
+
+    
 
     init() {
         this.grid2d = [];
@@ -30,12 +34,38 @@ class GridModel{
         return this.grid2d[i][j]
     }
 
-    setStart(start){
-        this.start = start;
+    setStart(i, j){
+        if(this.start === undefined){
+            this.start = [i, j]
+            this.getCell(i, j).setAttribute('class', START);
+            return;
+        }
+        let newStart = this.getCell(i, j);
+        let oldStart = this.getCell(this.start[0], this.start[1]);
+        let cellType = newStart.className['baseVal'];
+
+        if(cellType === WALL || cellType === END) return;
+        oldStart.setAttribute('class', CELL);
+        
+        newStart.setAttribute('class', START);
+        this.start = [i, j];
     }
 
-    setEnd(end){
-        this.end = end;
+    setEnd(i, j){
+        if(this.end === undefined){
+            this.end = [i, j]
+            this.getCell(i, j).setAttribute('class', END);
+            return;
+        }
+        let newEnd = this.getCell(i, j);
+        let oldEnd = this.getCell(this.end[0], this.end[1]);
+        let cellType = newEnd.className['baseVal'];
+
+        if(cellType === WALL || cellType === START) return;
+        oldEnd.setAttribute('class', CELL);
+        
+        newEnd.setAttribute('class', END);
+        this.end = [i, j];
     }
 
 
@@ -64,6 +94,7 @@ rectSvgEle.style = "-webkit-tap-highlight-color: rgba(0, 0, 0, 0);";
 rectSvgEle.setAttribute('class', 'cell');
 rectSvgEle.style.stroke = '#000';
 rectSvgEle.style.strokeOpacity = 0.2
+
 
 var gridArray = []
 var columnsMax = Math.ceil(mainContainer.clientWidth / 30);
@@ -97,42 +128,65 @@ while (true) {
     mainContainer.appendChild(newEle);
     currCol++;
 }
+grid.setStart(0,0);
+grid.setEnd(rowsMax - 2, columnsMax - 2);
+
 
 
 function onMouseMove(mouse) {
     let x = mouse.clientX;
     let y = mouse.clientY;
-    let child = document.elementFromPoint(x, y);
-    child.setAttribute('class', WALL);
+    let childCords = getIndexFromCords(x, y)
+    let child = grid.getCell(childCords[0], childCords[1]);
+    let cellType = child.className['baseVal'];
+    if(startCaptured){
+        grid.setStart(childCords[0], childCords[1]);
+    }
+    else if(endCaptured){
+        grid.setEnd(childCords[0], childCords[1]);
+    }
+    else if(cellType !== START && cellType !== END)
+        child.setAttribute('class', WALL);
 }
 
-mainContainer.addEventListener('mousedown', mouse => {
+var startCaptured = false;
+var endCaptured = false;
+function onMouseDown(mouse) {
     mainContainer.onmousemove = onMouseMove;
     let x = mouse.clientX;
     let y = mouse.clientY;
-    console.log(x,y );
     let child = document.elementFromPoint(x, y);
-    if(child.className['baseVal'] === WALL){
+    let cellType = child.className['baseVal'];
+
+    if(cellType === WALL){
         child.setAttribute('class', CELL);
+    }
+    else if(cellType === START){
+        startCaptured = true;
+    }
+    else if(cellType === END){
+        endCaptured = true;
     }
     else{
         child.setAttribute('class', WALL);
     }
     
-    let cords = getIndexFromCords(x,y)    
-    grid.dfs(cords[0], cords[1]);
-})
+}
+
+mainContainer.addEventListener('mousedown', onMouseDown);
 
 
 function getIndexFromCords(x, y) {
     x -= Math.round(leftMargain);
     y -= Math.round(upperMargain);
-    let i = Math.floor( x / 30);
-    let j = Math.floor( y / 30);
+    let i = Math.floor( x / 30 );
+    let j = Math.floor( y / 30 );
     return [j, i];
 }
 
-document.addEventListener('mouseup', ()=>{
-    mainContainer.onmousemove = null;
+document.addEventListener('mouseup', () => { 
+    mainContainer.onmousemove = null; 
+    startCaptured = false;
+    endCaptured = false;
 })
 
