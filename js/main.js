@@ -1,192 +1,232 @@
-const WALL = "wall";
-const CELL = "cell";
-const VISITED = "visited";
-const START = "start";
-const END = "end";
+// Cell type enum
+import { Model } from "./Model";
+import { NotifType, CellType } from "./Enums";
+import { View } from "./View";
+import { Controller } from "./Controller";
+// // class Model {
+// //     constructor(rows, cols) {
+// //         this.rows = rows;
+// //         this.cols = cols;
+// //         this.grid = [];
+// //         this.observers = [];
+// //         this._init();
+// //     }
 
-class GridModel{
+// //     _init() {
+// //         for (let i = 0; i < this.rows; i++) {
+// //             let row = [];
+// //             for (let j = 0; j < this.cols; j++) {
+// //                 row.push(CellType.CELL);
+// //             }
+// //             this.grid.push(row);
+// //         }
+// //     }
+
+// //     _notifyObservers(notifType, ...params) {
+// //         this.observers.forEach(observer => {
+// //             observer.notify(notifType, ...params);
+// //         });
+// //     }
+
+// //     registerObserver(observer) {
+// //         this.observers.push(observer);
+// //     }
+
+// //     getCell(i, j) {
+// //         return this.grid[i][j];
+// //     }
+
+// //     setCell(i, j, state) {
+// //         this.grid[i][j] = state;
+// //         this._notifyObservers(NotifType.CELL_CHANGE, i, j, state);
+// //     }
+
+// //     setStart(i, j) {
+// //         if(this.start != undefined) {
+// //             let newStart = this.getCell(i, j);
+// //             if (newStart === CellType.WALL || newStart === CellType.END)
+// //                 return;
     
-    constructor(rows, cols){
-        this.rows = rows;
-        this.cols = cols;
-        
-        this.init();
-    }
+// //             let oldStart = this.start;
+// //             this.setCell(oldStart[0], oldStart[1], CellType.CELL);
+// //         }
 
+// //         this.setCell(i, j, CellType.START);
+// //         this.start = [i, j]
+// //     }
+
+// //     setEnd(i, j) {
+// //         if(this.end != undefined) {
+// //             let newEnd = this.getCell(i, j);
+// //             if (newEnd === CellType.WALL || newEnd === CellType.START)
+// //                 return;
     
+// //             let oldEnd = this.end;
+// //             this.setCell(oldEnd[0], oldEnd[1], CellType.CELL);            
+// //         }
 
-    init() {
-        this.grid2d = [];
-        for (let i = 0; i < this.rows; i++) {
-            let row = [];
-            for (let j = 0; j < this.cols; j++) {
-                row.push(0);       
-            }
-            this.grid2d.push(row);
-        }
-    }
+// //         this.setCell(i, j, CellType.END);
+// //         this.end = [i, j];
+// //     }
+// // }
 
-    setCell(i, j, ele){
-        this.grid2d[i][j] = ele;
-    }
+// // class View {
+// //     static _svgNS = "http://www.w3.org/2000/svg";
+// //     static mainContainer = document.getElementById('canvas');
+// //     static leftMargain = View.mainContainer.getBoundingClientRect().left;
+// //     static upperMargain = View.mainContainer.getBoundingClientRect().top;
 
-    getCell(i, j){
-        return this.grid2d[i][j]
-    }
+// //     static createCell(x, y) {
+// //         let newCell = document.createElementNS(View._svgNS, 'rect');
+// //         newCell.setAttribute('width', '30');
+// //         newCell.setAttribute('height', '30');
+// //         newCell.style = "-webkit-tap-highlight-color: rgba(0, 0, 0, 0);";
+// //         newCell.setAttribute('class', 'cell');
+// //         newCell.style.stroke = '#000';
+// //         newCell.style.strokeOpacity = 0.2;
+// //         newCell.setAttribute('x', x.toString());
+// //         newCell.setAttribute('y', y.toString());
 
-    setStart(i, j){
-        if(this.start === undefined){
-            this.start = [i, j]
-            this.getCell(i, j).setAttribute('class', START);
-            return;
-        }
-        let newStart = this.getCell(i, j);
-        let oldStart = this.getCell(this.start[0], this.start[1]);
-        let cellType = newStart.className['baseVal'];
+// //         return newCell;
+// //     }
 
-        if(cellType === WALL || cellType === END) return;
-        oldStart.setAttribute('class', CELL);
-        
-        newStart.setAttribute('class', START);
-        this.start = [i, j];
-    }
+// //     constructor(rows, cols) {
+// //         this.cellsRefArray = [];
+// //         this.rows = rows;
+// //         this.cols = cols;
 
-    setEnd(i, j){
-        if(this.end === undefined){
-            this.end = [i, j]
-            this.getCell(i, j).setAttribute('class', END);
-            return;
-        }
-        let newEnd = this.getCell(i, j);
-        let oldEnd = this.getCell(this.end[0], this.end[1]);
-        let cellType = newEnd.className['baseVal'];
+// //         let currRow = 0;
+// //         let currCol = 0;
+// //         let x = 0;
+// //         let y = 0;
 
-        if(cellType === WALL || cellType === START) return;
-        oldEnd.setAttribute('class', CELL);
-        
-        newEnd.setAttribute('class', END);
-        this.end = [i, j];
-    }
+// //         while (currRow != this.rows) {
+// //             if (currCol == this.cols) {
+// //                 currRow++;
+// //                 currCol = 0;
+// //                 x = 0;
+// //                 y += 30;
+// //             }
 
+// //             let newCell = View.createCell(x, y);
+// //             this.cellsRefArray.push(newCell);
+// //             View.mainContainer.appendChild(newCell);
+// //             x += 30;
+// //             currCol++;
+// //         }
+// //     }
 
-    async dfs(i, j) {
-        if(i < 0 || j < 0 || i >= this.rows || j >= this.cols) return;
-        let cell = this.getCell(i, j);
+// //     getCellRef(x, y) {
+// //         let index = (x * this.cols) + y;
+// //         return this.cellsRefArray[index];
+// //     }
 
-        if(cell.className['baseVal'] !== CELL) return;
+// //     static getIndexFromCords(x, y) {
+// //         x -= Math.round(View.leftMargain);
+// //         y -= Math.round(View.upperMargain);
+// //         let i = Math.floor(x / 30);
+// //         let j = Math.floor(y / 30);
+// //         return [j, i];
+// //     }
 
-        cell.setAttribute('class', VISITED);
-        await new Promise(r => setTimeout(r, 10));
-        await this.dfs(i - 1, j);
-        await this.dfs(i, j - 1);
-        await this.dfs(i + 1, j);
-        await this.dfs(i, j + 1);
-    }
-}
+// //     notify(notifType, ...params) {
+// //         switch (notifType) {
+// //             case NotifType.CELL_CHANGE:
+// //                 if (params.length != 3) throw "Invalid number of args"
+// //                 let i = params[0], j = params[1], newState = params[2];
+// //                 let cell = this.getCellRef(i, j);
+// //                 cell.setAttribute('class', newState);
+// //                 break;
 
-var mainContainer = document.getElementById("canvas");
-const svgNS = "http://www.w3.org/2000/svg";
+// //             default:
+// //                 break;
+// //         }
+// //     }
 
-var rectSvgEle = document.createElementNS(svgNS, 'rect');
-rectSvgEle.setAttribute('width', '30');
-rectSvgEle.setAttribute('height', '30');
-rectSvgEle.style = "-webkit-tap-highlight-color: rgba(0, 0, 0, 0);";
-rectSvgEle.setAttribute('class', 'cell');
-rectSvgEle.style.stroke = '#000';
-rectSvgEle.style.strokeOpacity = 0.2
-
-
-var gridArray = []
-var columnsMax = Math.ceil(mainContainer.clientWidth / 30);
-var rowsMax = Math.ceil(mainContainer.clientHeight / 30);
-var newGrid = new GridModel(rowsMax, columnsMax);
-var leftMargain = mainContainer.getBoundingClientRect().left;
-var upperMargain = mainContainer.getBoundingClientRect().top;
-
-// var columnsMax = 150;
-// var rowsMax = 150;
-var x = 0;
-var y = 0;
-let currRow = 0;
-let currCol = 0;
-var grid = new GridModel(rowsMax, columnsMax);
-while (true) {
-    if(currCol == columnsMax){
-        currRow++;
-        currCol = 0;
-        x = 0;
-        y += 30;
-    }
-    if(currRow == rowsMax){
-        break;
-    }
-    var newEle = rectSvgEle.cloneNode(true);
-    newEle.setAttribute('x', x.toString());
-    newEle.setAttribute('y', y.toString());
-    grid.setCell(currRow, currCol, newEle);
-    x += 30;
-    mainContainer.appendChild(newEle);
-    currCol++;
-}
-grid.setStart(0,0);
-grid.setEnd(rowsMax - 2, columnsMax - 2);
+// // }
 
 
+// class Controller {
 
-function onMouseMove(mouse) {
-    let x = mouse.clientX;
-    let y = mouse.clientY;
-    let childCords = getIndexFromCords(x, y)
-    let child = grid.getCell(childCords[0], childCords[1]);
-    let cellType = child.className['baseVal'];
-    if(startCaptured){
-        grid.setStart(childCords[0], childCords[1]);
-    }
-    else if(endCaptured){
-        grid.setEnd(childCords[0], childCords[1]);
-    }
-    else if(cellType !== START && cellType !== END)
-        child.setAttribute('class', WALL);
-}
+//     constructor(model, view) {
+//         this.model = model;
+//         this.view = view;
+//         this.startCellCaptured = false;
+//         this.endCellCaptured = false;
 
-var startCaptured = false;
-var endCaptured = false;
-function onMouseDown(mouse) {
-    mainContainer.onmousemove = onMouseMove;
-    let x = mouse.clientX;
-    let y = mouse.clientY;
-    let child = document.elementFromPoint(x, y);
-    let cellType = child.className['baseVal'];
+//         View.mainContainer.onmousedown = _onMouseDown;
+//         View.mainContainer.onmouseup = _onMouseUp;
+//     }
 
-    if(cellType === WALL){
-        child.setAttribute('class', CELL);
-    }
-    else if(cellType === START){
-        startCaptured = true;
-    }
-    else if(cellType === END){
-        endCaptured = true;
-    }
-    else{
-        child.setAttribute('class', WALL);
-    }
+//     setStart(i, j){
+//         this.model.setStart(i, j);
+//     }
+
+//     setEnd(i, j) {
+//         this.model.setEnd(i, j);
+//     }
+
+//     setCell(i, j, newState) {
+//         this.model.setCell(i, j, newState);
+//     }
+
+//     registerObserver(observer) {
+//         this.model.registerObserver(observer);
+//     }
+
+// }
+
+// function _onMouseMove(mouse) {
+//     let x = mouse.clientX, y = mouse.clientY;
     
+//     let childCords = View.getIndexFromCords(x, y);
+//     let currentCell = model.getCell(childCords[0], childCords[1]);
+
+//     if (controller.startCellCaptured) {
+//         controller.setStart(childCords[0], childCords[1]);
+//     }
+//     else if (controller.endCellCaptured) {
+//         controller.setEnd(childCords[0], childCords[1])
+//     }
+//     else if (currentCell !== CellType.START && currentCell !== CellType.END) {
+//         controller.setCell(childCords[0], childCords[1], CellType.WALL);
+//     }
+// }
+
+// function _onMouseDown(mouse) {
+//     View.mainContainer.onmousemove = _onMouseMove;
+
+//     let x = mouse.clientX, y = mouse.clientY;
+//     let childCords = View.getIndexFromCords(x, y);
+//     let currentCell = model.getCell(childCords[0], childCords[1]);
+
+//     if (currentCell === CellType.WALL) {
+//         controller.setCell(childCords[0], childCords[1], CellType.CELL);
+//     }
+//     else if (currentCell === CellType.START) {
+//         controller.startCellCaptured = true;
+//     }
+//     else if (currentCell === CellType.END) {
+//         controller.endCellCaptured = true;
+//     }
+//     else {
+//         controller.setCell(childCords[0], childCords[1], CellType.WALL);
+//     }
+// }
+
+function _onMouseUp() {
+    View.mainContainer.onmousemove = null;
+    controller.endCellCaptured = false;
+    controller.startCellCaptured = false;
 }
 
-mainContainer.addEventListener('mousedown', onMouseDown);
+var columnsMax = Math.ceil(View.mainContainer.clientWidth / 30);
+var rowsMax = Math.ceil(View.mainContainer.clientHeight / 30);
 
+var model = new Model(rowsMax, columnsMax);
+var view = new View(rowsMax, columnsMax);
+model.registerObserver(view);
 
-function getIndexFromCords(x, y) {
-    x -= Math.round(leftMargain);
-    y -= Math.round(upperMargain);
-    let i = Math.floor( x / 30 );
-    let j = Math.floor( y / 30 );
-    return [j, i];
-}
-
-document.addEventListener('mouseup', () => { 
-    mainContainer.onmousemove = null; 
-    startCaptured = false;
-    endCaptured = false;
-})
-
+var controller = new Controller(model, view);
+controller.setStart(0,0);
+controller.setEnd(5,5);
