@@ -6,7 +6,8 @@ class CellType {
     static START = 'start';
     static END = 'end';
 }
-
+// Notif type enum
+// will be used in future updates to implment layout changes
 class NotifType {
     static CELL_CHANGE = 'cell_change';
 }
