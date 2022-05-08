@@ -5,6 +5,7 @@ class CellType {
     static VISITED = 'visited';
     static START = 'start';
     static END = 'end';
+    static PATH = 'path'
 }
 // Notif type enum
 // will be used in future updates to implment layout changes
@@ -51,11 +52,11 @@ class Model {
     }
 
     setStart(i, j) {
-        if(this.start != undefined) {
+        if (this.start != undefined) {
             let newStart = this.getCell(i, j);
             if (newStart === CellType.WALL || newStart === CellType.END)
                 return;
-    
+
             let oldStart = this.start;
             this.setCell(oldStart[0], oldStart[1], CellType.CELL);
         }
@@ -64,18 +65,26 @@ class Model {
         this.start = [i, j]
     }
 
+    getStart() {
+        return this.start;
+    }
+
     setEnd(i, j) {
-        if(this.end != undefined) {
+        if (this.end != undefined) {
             let newEnd = this.getCell(i, j);
             if (newEnd === CellType.WALL || newEnd === CellType.START)
                 return;
-    
+
             let oldEnd = this.end;
-            this.setCell(oldEnd[0], oldEnd[1], CellType.CELL);            
+            this.setCell(oldEnd[0], oldEnd[1], CellType.CELL);
         }
 
         this.setCell(i, j, CellType.END);
         this.end = [i, j];
+    }
+
+    getEnd() {
+        return this.end;
     }
 }
 
@@ -167,7 +176,11 @@ class Controller {
         View.mainContainer.onmouseup = _onMouseUp;
     }
 
-    setStart(i, j){
+    getCell(i, j) {
+        return this.model.getCell(i, j);
+    }
+
+    setStart(i, j) {
         this.model.setStart(i, j);
     }
 
@@ -183,11 +196,23 @@ class Controller {
         this.model.registerObserver(observer);
     }
 
+    getStart() {
+        return this.model.getStart();
+    }
+
+    getEnd() {
+        return this.model.getEnd();
+    }
+
+    getRows() {
+        return this.model.row
+    }
+
 }
 
 function _onMouseMove(mouse) {
     let x = mouse.clientX, y = mouse.clientY;
-    
+
     let childCords = View.getIndexFromCords(x, y);
     let currentCell = model.getCell(childCords[0], childCords[1]);
 
@@ -229,6 +254,63 @@ function _onMouseUp() {
     controller.startCellCaptured = false;
 }
 
+
+class PathFinder {
+    constructor(controller, rows, cols) {
+        this.controller = controller;
+        this.path = [];
+        this.endReached = false;
+        this.rows = rows;
+        this.cols = cols;
+    }
+
+    async _colorPath() {
+        //FIXME: only the first cell gets colored with path color idk why
+        for (let i = 0; i < this.path.length; i++) {
+            let cell = this.path[i];
+            this.controller.setCell(cell[0], cell[1], CellType.PATH);
+            await new Promise(r => setTimeout(r, 10));
+        }
+    }
+}
+
+class DFS extends PathFinder {
+    constructor(controller, rows, cols) {
+        super(controller, rows, cols);
+    }
+    start() {
+        let startCell = this.controller.getStart();
+        this.find(startCell[0], startCell[1]);
+    }
+
+    async find(i, j) {
+        if (i < 0 || j < 0 || i >= this.rows || j >= this.cols || this.endReached)
+            return;
+
+        let cell = controller.getCell(i, j);
+        if (cell === CellType.END) {
+            this.endReached = true;
+            this._colorPath();
+            return;
+        }
+        if (cell === CellType.VISITED || cell === CellType.WALL)
+            return;
+
+
+        this.path.push([i, j]);
+        this.controller.setCell(i, j, CellType.VISITED);
+
+        await new Promise(r => setTimeout(r, 10));
+
+        await this.find(i - 1, j);
+        await this.find(i, j - 1);
+        await this.find(i + 1, j);
+        await this.find(i, j + 1);
+
+        this.path.pop();
+    }
+}
+
 var columnsMax = Math.ceil(View.mainContainer.clientWidth / 30);
 var rowsMax = Math.ceil(View.mainContainer.clientHeight / 30);
 
@@ -237,5 +319,12 @@ var view = new View(rowsMax, columnsMax);
 model.registerObserver(view);
 
 var controller = new Controller(model, view);
-controller.setStart(0,0);
-controller.setEnd(5,5);
+controller.setStart(0, 0);
+controller.setEnd(5, 5);
+var algo = new DFS(controller, rowsMax, columnsMax);
+// algo.start()
+document.addEventListener('keydown', _start);
+
+function _start(key) {
+    algo.start();
+}
