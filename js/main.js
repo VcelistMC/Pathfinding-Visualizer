@@ -173,7 +173,7 @@ class Controller {
         this.endCellCaptured = false;
 
         View.mainContainer.onmousedown = _onMouseDown;
-        View.mainContainer.onmouseup = _onMouseUp;
+        document.onmouseup = _onMouseUp;
     }
 
     getCell(i, j) {
@@ -203,11 +203,6 @@ class Controller {
     getEnd() {
         return this.model.getEnd();
     }
-
-    getRows() {
-        return this.model.row
-    }
-
 }
 
 function _onMouseMove(mouse) {
@@ -265,11 +260,14 @@ class PathFinder {
     }
 
     async _colorPath() {
-        //FIXME: only the first cell gets colored with path color idk why
         for (let i = 0; i < this.path.length; i++) {
             let cell = this.path[i];
-            this.controller.setCell(cell[0], cell[1], CellType.PATH);
+            let cellType = this.controller.getCell(cell[0], cell[1]);
             await new Promise(r => setTimeout(r, 10));
+
+            if(cellType === CellType.END || cellType == CellType.START)
+                continue;
+            this.controller.setCell(cell[0], cell[1], CellType.PATH);
         }
     }
 }
@@ -290,15 +288,16 @@ class DFS extends PathFinder {
         let cell = controller.getCell(i, j);
         if (cell === CellType.END) {
             this.endReached = true;
-            this._colorPath();
+            await this._colorPath();
             return;
         }
         if (cell === CellType.VISITED || cell === CellType.WALL)
             return;
 
-
-        this.path.push([i, j]);
-        this.controller.setCell(i, j, CellType.VISITED);
+        if(cell !== CellType.START) {
+            this.path.push([i, j]);
+            this.controller.setCell(i, j, CellType.VISITED);
+        }
 
         await new Promise(r => setTimeout(r, 10));
 
@@ -306,7 +305,6 @@ class DFS extends PathFinder {
         await this.find(i, j - 1);
         await this.find(i + 1, j);
         await this.find(i, j + 1);
-
         this.path.pop();
     }
 }
@@ -314,13 +312,19 @@ class DFS extends PathFinder {
 var columnsMax = Math.ceil(View.mainContainer.clientWidth / 30);
 var rowsMax = Math.ceil(View.mainContainer.clientHeight / 30);
 
+let pointsX = Math.ceil(rowsMax / 2);
+let startPointY = Math.ceil(columnsMax / 4);
+let endPointsY = Math.ceil((3*columnsMax) / 4);
+
 var model = new Model(rowsMax, columnsMax);
 var view = new View(rowsMax, columnsMax);
 model.registerObserver(view);
 
 var controller = new Controller(model, view);
-controller.setStart(0, 0);
-controller.setEnd(5, 5);
+
+controller.setStart(pointsX, startPointY);
+controller.setEnd(pointsX, endPointsY);
+
 var algo = new DFS(controller, rowsMax, columnsMax);
 // algo.start()
 document.addEventListener('keydown', _start);
