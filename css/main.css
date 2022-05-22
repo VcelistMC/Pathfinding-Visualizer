@@ -27,19 +27,17 @@ svg {
     width: 100%;
 }
 
-body {
-    background-color: #222831;
-}
-
 .grid-container {
     background-color: #222831;
     display: grid;
     height: 100vh;
-    grid-template-areas:
-        "main sidebar"
-        "footer footer";
+    /* grid-auto-flow: column; */
     grid-template-columns: 3fr 1fr;
-    grid-template-rows: 4fr 0.3fr;
+    grid-template-areas: "main sidebar";
+}
+
+body {
+    background-color: #222831;
 }
 
 main {
@@ -54,10 +52,25 @@ main {
     margin-bottom: 10px;
 }
 
+fieldset {
+    font-size: 0.1em;
+    border-color: lightblue;
+    border-style: solid;
+}
+
+legend {
+    padding: 5px 10px;
+    font-size: 0.1em;
+}
+
+
+
+
 #sidebar {
     grid-area: "sidebar";
     color: #EEEEEE;
 }
+
 /* .footer {
     grid-area: "footer";
 } */
@@ -66,7 +79,7 @@ main {
     background-color: #393E46;
     color: #4b4c4d;
     grid-area: "footer";
-    margin: 0px 10px 10px 10px;
+    margin: 0px 0px 0px 0px;
 }
 
 .footer-basic ul {
@@ -84,7 +97,7 @@ main {
 
 .footer-basic ul a {
     color: inherit;
-    text-decoration: none;
+    text-decoration: non;
     opacity: 0.8;
 }
 
@@ -94,7 +107,7 @@ main {
 
 .footer-basic .social {
     text-align: center;
-    margin: 10px;
+    /* margin: 10px; */
     /* padding-bottom: 25px; */
 }
 
