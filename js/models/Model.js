@@ -1,5 +1,4 @@
-import { CellType } from "./Enums.js";
-import { NotifType } from "./Enums.js";
+import { CellType, NotifType } from "./Enums.js";
 
 export class Model {
     constructor(rows, cols) {

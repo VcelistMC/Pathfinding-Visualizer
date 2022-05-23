@@ -1,4 +1,4 @@
-import { View } from "./View.js";
+import { View } from "../view/View.js";
 import { _onMouseDown, _onMouseUp, _onMouseMove } from "./EventListeners.js";
 
 export class Controller {
@@ -9,8 +9,8 @@ export class Controller {
         this.startCellCaptured = false;
         this.endCellCaptured = false;
 
-        View.mainContainer.onmousedown = _onMouseDown;
-        document.onmouseup = _onMouseUp;
+        View.mainContainer.onmousedown = (ev) => {_onMouseDown(ev, this); }
+        document.onmouseup = () => { _onMouseUp(this); }
     }
 
     getCell(i, j) {
@@ -40,5 +40,6 @@ export class Controller {
     getEnd() {
         return this.model.getEnd();
     }
+
 }
 

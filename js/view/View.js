@@ -1,4 +1,4 @@
-import { NotifType } from "./Enums.js";
+import { NotifType, CellType } from "../models/Enums.js";
 export class View {
     static _svgNS = "http://www.w3.org/2000/svg";
     static mainContainer = document.getElementById('canvas');
@@ -10,7 +10,7 @@ export class View {
         newCell.setAttribute('width', '30');
         newCell.setAttribute('height', '30');
         newCell.style = "-webkit-tap-highlight-color: rgba(0, 0, 0, 0);";
-        newCell.setAttribute('class', 'cell');
+        newCell.setAttribute('class', CellType.CELL);
         newCell.style.stroke = '#000';
         newCell.style.strokeOpacity = 0.2;
         newCell.setAttribute('x', x.toString());

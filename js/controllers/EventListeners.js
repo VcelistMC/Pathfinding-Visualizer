@@ -1,14 +1,12 @@
-import { View } from "./View.js";
-import { CellType } from "./Enums.js";
+import { View } from "../view/View.js";
+import { CellType } from "../models/Enums.js";
 
 
-// FIXME: model is not defined here i obv know whats wrong, dk how to fix it yet
-// still have to figure out how js import works
-export function _onMouseMove(mouse) {
+export function _onMouseMove(mouse, controller) {
     let x = mouse.clientX, y = mouse.clientY;
 
     let childCords = View.getIndexFromCords(x, y);
-    let currentCell = model.getCell(childCords[0], childCords[1]);
+    let currentCell = controller.getCell(childCords[0], childCords[1]);
 
     if (controller.startCellCaptured) {
         controller.setStart(childCords[0], childCords[1]);
@@ -21,12 +19,12 @@ export function _onMouseMove(mouse) {
     }
 }
 
-export function _onMouseDown(mouse) {
-    View.mainContainer.onmousemove = _onMouseMove;
+export function _onMouseDown(mouse, controller) {
+    View.mainContainer.onmousemove = (mouse) => {_onMouseMove(mouse, controller)};
 
     let x = mouse.clientX, y = mouse.clientY;
     let childCords = View.getIndexFromCords(x, y);
-    let currentCell = model.getCell(childCords[0], childCords[1]);
+    let currentCell = controller.getCell(childCords[0], childCords[1]);
 
     if (currentCell === CellType.WALL) {
         controller.setCell(childCords[0], childCords[1], CellType.CELL);
@@ -42,7 +40,7 @@ export function _onMouseDown(mouse) {
     }
 }
 
-export function _onMouseUp() {
+export function _onMouseUp(controller) {
     View.mainContainer.onmousemove = null;
     controller.endCellCaptured = false;
     controller.startCellCaptured = false;
