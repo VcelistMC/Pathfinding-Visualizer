@@ -14,6 +14,7 @@ export class Controller {
     }
 
     getCell(i, j) {
+        console.debug("getting " + i + " and " + j);
         return this.model.getCell(i, j);
     }
 

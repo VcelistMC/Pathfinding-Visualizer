@@ -30,6 +30,10 @@ export class Model {
     }
 
     getCell(i, j) {
+        if(i < 0 || i >= this.rows)
+            throw "Invalid i value: " + i;
+        if(j < 0 || j >= this.cols)
+            throw "Invalid j value: " + j;
         return this.grid[i][j];
     }
 

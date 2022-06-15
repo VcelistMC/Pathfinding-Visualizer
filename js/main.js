@@ -5,13 +5,14 @@ import { View } from "./view/View.js";
 import { Controller } from "./controllers/Controller.js";
 import { DFS } from "./algorihms/Pathfinders/DFS.js";
 import { PathFinder } from "./algorihms/Pathfinders/Pathfinder.js";
+import { BFS } from "./algorihms/Pathfinders/BFS.js";
 
 
 
 
 var columnsMax = Math.ceil(View.mainContainer.clientWidth / 30);
 var rowsMax = Math.ceil(View.mainContainer.clientHeight / 30);
-
+console.log(rowsMax, columnsMax);
 let pointsX = Math.round(rowsMax / 2);
 let startPointY = Math.round(columnsMax / 4);
 let endPointsY = Math.round((3*columnsMax) / 4);
@@ -24,6 +25,6 @@ var controller = new Controller(model, view);
 
 controller.setStart(pointsX, startPointY);
 controller.setEnd(pointsX, endPointsY);
-var algo = new DFS(controller, rowsMax, columnsMax);
+var algo = new BFS(controller, rowsMax, columnsMax);
 
-document.addEventListener('keydown', () => algo.start());
+document.addEventListener('dblclick', () => algo.start());
