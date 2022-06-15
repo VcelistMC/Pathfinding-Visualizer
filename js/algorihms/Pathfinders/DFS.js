@@ -4,9 +4,8 @@ export class DFS extends PathFinder {
     constructor(controller, rows, cols) {
         super(controller, rows, cols);
     }
-    // FIXME: JS dumb implmentation of the this keyword breaks the algorithm
-    // 'this' changes to 'documnet' instance when the event is fired smh
     start() {
+        console.log(this);
         let startCell = this.controller.getStart();
         this.find(startCell[0], startCell[1]);
     }

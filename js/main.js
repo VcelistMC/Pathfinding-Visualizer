@@ -25,5 +25,5 @@ var controller = new Controller(model, view);
 controller.setStart(pointsX, startPointY);
 controller.setEnd(pointsX, endPointsY);
 var algo = new DFS(controller, rowsMax, columnsMax);
-algo.start();
 
+document.addEventListener('keydown', () => algo.start());
